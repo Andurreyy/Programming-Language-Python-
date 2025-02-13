@@ -89,7 +89,7 @@ class Interpreter(object):
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
 
-        # we expect the current token to be a single-digit integer
+        # we expect the current token to be a single-digit or double integer
         left = self.current_token
         self.eat(INTEGER)
 
