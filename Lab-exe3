@@ -1,5 +1,5 @@
 class Token:
-    INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
+    INTEGER, PLUS, MINUS, MUL, DIV, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'EOF'
 
     def __init__(self, type, value):
         self.type = type
@@ -10,7 +10,7 @@ class Token:
 
 class Interpreter:
     def __init__(self, text):
-        self.text = text.replace(" ", "")  # Remove whitespace
+        self.text = text.replace(" ", "")  # Remove spaces
         self.pos = 0
         self.current_token = None
 
@@ -33,10 +33,15 @@ class Interpreter:
         if current_char == '+':
             self.pos += 1
             return Token(Token.PLUS, '+')
-
         if current_char == '-':
             self.pos += 1
             return Token(Token.MINUS, '-')
+        if current_char == '*':
+            self.pos += 1
+            return Token(Token.MUL, '*')
+        if current_char == '/':
+            self.pos += 1
+            return Token(Token.DIV, '/')
 
         self.error()
 
@@ -48,11 +53,10 @@ class Interpreter:
 
     def expr(self):
         self.current_token = self.get_next_token()
-
         result = self.current_token.value
         self.eat(Token.INTEGER)
 
-        while self.current_token.type in (Token.PLUS, Token.MINUS):
+        while self.current_token.type in (Token.PLUS, Token.MINUS, Token.MUL, Token.DIV):
             op = self.current_token
             if op.type == Token.PLUS:
                 self.eat(Token.PLUS)
@@ -60,6 +64,12 @@ class Interpreter:
             elif op.type == Token.MINUS:
                 self.eat(Token.MINUS)
                 result -= self.current_token.value
+            elif op.type == Token.MUL:
+                self.eat(Token.MUL)
+                result *= self.current_token.value
+            elif op.type == Token.DIV:
+                self.eat(Token.DIV)
+                result = float(result) / self.current_token.value  # Ensure float division
             self.eat(Token.INTEGER)
         
         return result
@@ -75,3 +85,4 @@ if __name__ == "__main__":
             print(result)
         except Exception as e:
             print(e)
+
